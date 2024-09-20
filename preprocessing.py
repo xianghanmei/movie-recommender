@@ -10,7 +10,13 @@ def load_data(data_dir="ml-100k/"):
     return values
 
 def create_sparse_matrix(values, data_shape=(943, 1682)):
-    M = scipy.sparse.csr_matrix((values[:, 2], (values[:, 0], values[:, 1])), dtype=np.float, shape=data_shape)
+    max_row_index = values[:, 0].max()
+    max_col_index = values[:, 1].max()
+
+    adjusted_shape = (max(max_row_index + 1, data_shape[0]), 
+                      max(max_col_index + 1, data_shape[1]))
+    
+    M = scipy.sparse.csr_matrix((values[:, 2], (values[:, 0], values[:, 1])), dtype=np.float64, shape=adjusted_shape)
     return M
 
 def split_data(values, test_size=0.1, random_state=2024):
