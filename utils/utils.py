@@ -1,6 +1,9 @@
 from surprise import KNNBaseline, dump, Dataset, Reader
 
 def load_data(file_path='./ml-100k/u.data'):
+    """
+    Load the data with the data directory path
+    """
     reader = Reader(line_format='user item rating timestamp', sep='\t')
     data = Dataset.load_from_file(file_path, reader=reader)
     return data
@@ -27,23 +30,15 @@ def get_movie_name(movie_id, movie_id_to_name):
         return None
     
 def get_filtered_movies(model_path, movie_id_to_name):
+    """
+    Return the list of movie names in the training set
+    """
     algo = dump.load(model_path)[1]
     trainset_ids = set([int(algo.trainset.to_raw_iid(i)) for i in algo.trainset.all_items()])
-    # print(f"Trainset contains the following raw IDs: {trainset_ids}")
-    # print(f"The original dataset contains the followibg raw IDs: {movie_id_to_name.items()}")
     filtered_movies = []
-    filtered_ids = []
-    # movie_ids = []
     for movie_id, movie_name in movie_id_to_name.items():
-        # movie_ids.append(movie_id)
         if movie_id in trainset_ids:
-            filtered_ids.append(movie_id)
             filtered_movies.append(movie_name)
-    # filtered_movies = {movie_id: movie_id_to_name[movie_id] for movie_id in trainset_ids}
-    # filtered_movies = {movie_id: name for movie_id, name in movie_id_to_name.items() if movie_id in trainset_ids}
-    # print(f"The original dataset contains the following raw IDs: {movie_ids}")
-    # print(f"Filtered_set contains the following movie ids: {filtered_ids}")
-    # print(f"Trainset contains the following movie names: {filtered_movies}")
     return filtered_movies
 
 def train_and_save_model(data, 
@@ -57,11 +52,8 @@ def train_and_save_model(data,
                          reg_u=15,
                          save_path='./model/knn_movie_recommender.model'):
     """
-    Use KNNBaseline to train the recommender model, keyword arguments include:
-    data - the training data
-    sim_rule - the rule to compute similarity
-    user_based - whether to use user-based filtering
-    save_path - the path to save the trained model
+    Use KNNBaseline to train the recommender model, keyword arguments 
+    include the original arguments of the function, reference: https://surprise.readthedocs.io/en/stable/knn_inspired.html
     """
     sim_options = {
         'name': sim_rule,
@@ -86,6 +78,9 @@ def train_and_save_model(data,
     print(f"Model saved to {save_path}")
 
 def load_model_and_recommend(movie_name, model_path, **kwargs):
+    """
+    Recommend the top 1 movie that is most similar to the movie chosen by the user
+    """
     movie_name_to_id = kwargs.get('movie_name_to_id')
     movie_id_to_name = kwargs.get('movie_id_to_name')
 
