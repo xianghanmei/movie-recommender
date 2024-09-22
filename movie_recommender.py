@@ -5,7 +5,7 @@ if __name__ == "__main__":
     # Load the data
     file_name = 'ml-100k'
     file_path = ''.join(['./', file_name])
-    data = load_data()
+    data = load_data(file_path)
 
     # Construct the mapping dictionaries between movie names and raw ids
     movie_id_to_name = {}
